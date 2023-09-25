@@ -41,7 +41,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           name: puzzles-artifacts
-          path: puzzles.zip
+          path: ./
           search_artifacts:  true
           if_no_artifact_found: warn
 
@@ -53,7 +53,6 @@ jobs:
         run: |
           mkdir -p public/puzzles
           ls -ltr
-          ls -ltr puzzles.zip/
           if [[ -f 'puzzles.zip' ]]; then unzip puzzles.zip -d public/puzzles/; fi
           ls -ltr
           rm -f puzzles.zip
