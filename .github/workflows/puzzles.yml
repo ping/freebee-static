@@ -52,7 +52,9 @@ jobs:
       - name: Generate puzzles
         run: |
           mkdir -p public/puzzles
+          ls -ltr
           if [[ -f 'puzzles.zip' ]]; then unzip puzzles.zip -d public/puzzles/; fi
+          ls -ltr
           rm -f puzzles.zip
           python generate.py wordlist-20210729.txt '2021-01-01' 'public/puzzles'
           zip --junk-paths puzzles.zip public/puzzles/*.json
