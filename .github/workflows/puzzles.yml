@@ -1,0 +1,74 @@
+name: "Generate Puzzles"
+
+on:
+  push:
+    branches:
+      - '**'
+  schedule:
+    - cron: "0 0,12 * * *"
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  generate_pubbles:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.ref_name == github.event.repository.default_branch
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Download puzzle artifacts
+        id: download-puzzle-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: puzzles-artifacts
+          path: puzzles.zip
+          search_artifacts:  true
+          if_no_artifact_found: warn
+
+      - name: Setup Pages
+        id: setup_pages
+        uses: actions/configure-pages@v3
+
+      - name: Generate puzzles
+        run: |
+          mkdir -p public/puzzles
+          if [[ -f 'puzzles.zip' ]]; then unzip puzzles.zip -d public/puzzles/; fi
+          rm -f puzzles.zip
+          python generate.py wordlist-20210729.txt '2023-09-01' 'public/puzzles'
+          zip --junk-paths puzzles.zip public/puzzles/*.json
+
+      # Ref: https://github.com/actions/starter-workflows/blob/main/pages/static.yml
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: puzzles-artifacts
+          path: puzzles.zip
+          if-no-files-found: error
