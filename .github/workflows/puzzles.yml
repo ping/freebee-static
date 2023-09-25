@@ -54,7 +54,7 @@ jobs:
           mkdir -p public/puzzles
           if [[ -f 'puzzles.zip' ]]; then unzip puzzles.zip -d public/puzzles/; fi
           rm -f puzzles.zip
-          python generate.py wordlist-20210729.txt '2022-01-01' 'public/puzzles'
+          python generate.py wordlist-20210729.txt '2021-01-01' 'public/puzzles'
           zip --junk-paths puzzles.zip public/puzzles/*.json
 
       # Ref: https://github.com/actions/starter-workflows/blob/main/pages/static.yml

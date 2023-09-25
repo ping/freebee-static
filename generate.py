@@ -78,7 +78,7 @@ def generate_puzzle_word(
         )
         if total_score < 300 and 20 <= len(valid_puzzle_guesses) <= 200:
             break
-        if attempt_count >= 30:
+        if attempt_count >= 50:
             return {}
 
     return {
