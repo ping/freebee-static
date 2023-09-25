@@ -1,10 +1,18 @@
 import argparse
 import json
+import logging
 import random
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List
+
+logger = logging.getLogger(__file__)
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
+logger.setLevel(logging.INFO)
 
 
 @dataclass
@@ -70,7 +78,7 @@ def generate_puzzle_word(
         )
         if total_score < 300 and 20 <= len(valid_puzzle_guesses) <= 200:
             break
-        if attempt_count >= 20:
+        if attempt_count >= 30:
             return {}
 
     return {
@@ -129,8 +137,8 @@ if __name__ == "__main__":
             continue
         output = generate_puzzle_word(pz, fw)
         if not output:
-            print(f"Unable to generate a puzzle for {output_filename}")
+            logger.warning(f"Unable to generate a puzzle for {output_filename}")
             continue
-        print(f"Generating {output_filename}")
+        logger.info(f"Generating {output_filename}")
         with output_filename.open("w", encoding="utf-8") as fp:
             json.dump(output, fp, separators=(",", ":"))
