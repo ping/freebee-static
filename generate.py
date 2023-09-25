@@ -53,22 +53,28 @@ def score(pz: PuzzleWord, letters: List[str]):
 def generate_puzzle_word(
     puzzle_words: List[PuzzleWord], filtered_words: List[PuzzleWord]
 ) -> Dict:
+    attempt_count = 0
     while True:
+        attempt_count += 1
         valid_puzzle_guesses: List[PuzzleWord] = []
-        pz: PuzzleWord = random.choice(puzzle_words)
-        centre_letter: str = random.choice(pz.letters)
+        puzzle_word: PuzzleWord = random.choice(puzzle_words)
+        centre_letter: str = random.choice(puzzle_word.letters)
         for w in filtered_words:
             if centre_letter not in w.letters:
                 continue
-            if [a for a in w.letters if (a not in pz.letters)]:
+            if [a for a in w.letters if (a not in puzzle_word.letters)]:
                 continue
             valid_puzzle_guesses.append(w)
-        total_score = sum([score(guess, pz.letters) for guess in valid_puzzle_guesses])
+        total_score = sum(
+            [score(guess, puzzle_word.letters) for guess in valid_puzzle_guesses]
+        )
         if total_score < 300 and 20 <= len(valid_puzzle_guesses) <= 200:
             break
+        if attempt_count >= 20:
+            return {}
 
     return {
-        "letters": "".join([a for a in pz.letters if a != centre_letter]),
+        "letters": "".join([a for a in puzzle_word.letters if a != centre_letter]),
         "center": centre_letter,
         "words": len(valid_puzzle_guesses),
         "total": total_score,
@@ -122,6 +128,9 @@ if __name__ == "__main__":
         if output_filename.exists():
             continue
         output = generate_puzzle_word(pz, fw)
+        if not output:
+            print(f"Unable to generate a puzzle for {output_filename}")
+            continue
         print(f"Generating {output_filename}")
         with output_filename.open("w", encoding="utf-8") as fp:
             json.dump(output, fp, separators=(",", ":"))
