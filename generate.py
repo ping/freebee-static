@@ -99,12 +99,12 @@ def valid_day(value: str) -> str:
     """
 
     try:
-        start_date = datetime.strptime(value, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        date_value = datetime.strptime(value, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     except ValueError:
         raise argparse.ArgumentTypeError(f'"{value}" is not a valid date format')
 
     now_utc = datetime.now(tz=timezone.utc)
-    if start_date > now_utc.replace(hour=0, minute=0, second=0, microsecond=0):
+    if date_value > now_utc.replace(hour=0, minute=0, second=0, microsecond=0):
         raise argparse.ArgumentTypeError(f'"{value}" is in the future')
 
     return value
