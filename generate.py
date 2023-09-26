@@ -50,12 +50,12 @@ def get_puzzle_words(filtered_words: List[PuzzleWord]) -> List[PuzzleWord]:
     return puzzle_words
 
 
-def score(pz: PuzzleWord, letters: List[str]):
-    if len(pz.word) == 4:
+def score(puzzleword: PuzzleWord, letters: List[str]):
+    if len(puzzleword.word) == 4:
         return 1
-    if len(pz.letters) == len(letters):
-        return len(pz.word) + 7
-    return len(pz.word)
+    if len(puzzleword.letters) == len(letters):
+        return len(puzzleword.word) + 7
+    return len(puzzleword.word)
 
 
 def generate_puzzle_word(
@@ -76,7 +76,9 @@ def generate_puzzle_word(
         total_score = sum(
             [score(guess, puzzle_word.letters) for guess in valid_puzzle_guesses]
         )
-        if total_score < 300 and 20 <= len(valid_puzzle_guesses) <= 200:
+        if total_score <= 300 and 20 <= len(valid_puzzle_guesses) <= 200:
+            # limit guess count and maximum possible score
+            # to favour "short" games
             break
         if attempt_count >= 50:
             return {}
