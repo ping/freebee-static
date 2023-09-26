@@ -131,11 +131,13 @@ if __name__ == "__main__":
     fw = get_filtered_words(args.wordlist)
     pz = get_puzzle_words(fw)
 
+    index = []
     now = datetime.now(tz=timezone.utc)
     for d in range((now - start_date).days + 2):
         gen_date = start_date + timedelta(days=d)
         output_filename = output_folder.joinpath(f'{gen_date.strftime("%Y%m%d")}.json')
         if output_filename.exists():
+            index.append(output_filename.name)
             continue
         output = generate_puzzle_word(pz, fw)
         if not output:
@@ -144,3 +146,8 @@ if __name__ == "__main__":
         logger.info(f"Generating {output_filename}")
         with output_filename.open("w", encoding="utf-8") as fp:
             json.dump(output, fp, separators=(",", ":"))
+        index.append(output_filename.name)
+
+    index_filename = output_folder.joinpath("index.json")
+    with index_filename.open("w", encoding="utf-8") as fp:
+        json.dump(sorted(index, reverse=True), fp, separators=(",", ":"))
